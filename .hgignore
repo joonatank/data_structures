@@ -1,0 +1,9 @@
+syntax: glob
+*~
+\#*\#
+build*
+*.bak
+*.swp
+*.kdev4
+.kdev_include_paths
+__pycache__
