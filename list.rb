@@ -24,11 +24,11 @@ class List
 	end
 
 	# @brief general purpose append
-	# @param index where to add
 	# @param value what to add
+	# @param index where to add
 	# @return ListElement on success, nil on failure
 	# return could be replaced by throwing
-	def append(index, value)
+	def append(value, index)
 		# empty list? add root
 		if _root.nil?
 			@_root = ListElement.new(nil, nil, value)
@@ -77,10 +77,32 @@ class List
 	end
 
 	# O(1) functions
+	def back()
+		return @_tail.nil? ? nil : @_tail.value
+	end
+
+	def front()
+		return @_root.nil? ? nil : @_root.value
+	end
+
 	def pop_front()
+		if @_root.nil?
+			return nil
+		else
+			val = @_root.value
+			@_root = @_root.next 
+			return val
+		end
 	end
 
 	def pop_back()
+		if @_tail.nil?
+			return nil
+		else
+			val = _tail.value
+			@_tail = @_tail.prev
+			return val
+		end
 	end
 
 	def push_front(value)
