@@ -4,29 +4,18 @@
 # Heap data structure
 # compared to search_tree heap is partially ordered not fully sorted
 #
-# min heap for the moment
 
-# need basic heap stuff (add, remove, peek)
-# creation
-# 	- merge
-# 	- from array
-# rebalance
-# 	needed after addition/remove to maintain O(log(n)) complexity
-# heap_sort
-#
-# DONE
+# Operators
 # 	- peek
 # 	- make heap
 # 	- push
 # 	- pop
-# TODO
-# 	- merge
 # 	- print
-# 	- rebalance
+# 	- merge
 # 	- sort
 
 # Binary heap
-# No random access remove
+# MAX heap
 class Heap
 	# implementation as an array
 	attr :_data
@@ -37,12 +26,13 @@ class Heap
 		if arr.nil? 
 			@_data = Array.new(0)
 		else
+			# This isn't copy constructor it's a copy of the reference
 			@_data = arr
 
 			# FIXME make heap
 			i = (@_data.length()-1)/2
 			while i >= 0
-				_heapify(@_data, i)
+				_heapify(@_data, i, @_data.length())
 				i -= 1
 			end
 		end
@@ -62,7 +52,8 @@ class Heap
 		# add to last
 		@_data[@_data.length()] = key
 		# fix the heap order
-		_shift_up(@_data, @_data.length()-1)
+		len = @_data.length()
+		_shift_up(@_data, len-1, len)
 	end
 
 	# @brief remove min from the heap
@@ -73,9 +64,34 @@ class Heap
 		@_data[0] = @_data[@_data.length()-1]
 		@_data.pop()
 		# fix the heap order
-		_shift_down(@_data, 0)
+		_shift_down(@_data, 0, @_data.length())
 		
 		return v
+	end
+
+	# In place sort
+	# sort to [min, max] with max heap
+	# we need to move the heap index by +1 for every iteration of the sorting
+	# so the heap is at arr[i, N], while the sorted data is at [0, i[
+	# then we can do arr[i] = pop(i), for all i in [0, N]
+	# using a max heap it's actually easier to sort
+	# since we can do arr[len-i] = pop
+	#
+	# mhhh
+	# if we pass array here we need to
+	# contruct heap
+	# keep the heap at [0, i], keep sorted data at ]i, len]
+	def sort()
+		# We need to modify the array here
+			
+		len = @_data.length()-1
+		for i in (0..len)
+			# custom pop since we don't actually want to remove data from the array
+			tmp = @_data[len-i]
+			@_data[len-i] = peek()
+			@_data[0] = tmp
+			_shift_down(@_data, 0, len-i)
+		end
 	end
 
 	# @brief how many elements in the heap
@@ -91,44 +107,70 @@ class Heap
 	end
 
 	# More complex operations
+	
+	# @brief Merge another heap into this one
+	# @param other heap to add to this one
 	# TODO should this be a free function (so it doesn't modify this)
 	def merge(other)
-		# TODO implement
+		@_data.concat(other._data)
+		len = @_data.length()
+
+		# Redo the heap
+		i = (len-1)/2
+		while i >= 0
+			_heapify(@_data, i, len)
+			i -= 1
+		end
+	end
+
+	def print_()
+		len = @_data.length()
+		i = 1
+		while i <= len do
+			for j in (1..i)
+				# need - 2 since we are indexing both i, j from [1, len]
+				print("#{@_data[i+j-2]}\t")
+			end
+			puts ""
+			# every level has 2 times as many elements than the last
+			# level 1: pow(2, 0)
+			# level 2: pow(2, 1)
+			# level 3: pow(2, 2) etc.
+			i *= 2
+		end
 	end
 
 	# Internal
-	def _shift_up(arr, index)
-		len = arr.length()
+	def _shift_up(arr, index, len)
 		parent = (index-1)/2
 
-		if parent >= 0 && parent < arr.length() &&
-				arr[index] < arr[parent]
+		if parent >= 0 && parent < len &&
+				arr[index] > arr[parent]
 			# swap
 			tmp = arr[parent]
 			arr[parent] = arr[index]
 			arr[index] = tmp
 
 			# recursion
-			_shift_up(arr, parent)
+			_shift_up(arr, parent, len)
 		end
 	end
 
-	def _shift_down(arr, index)
-		_heapify(arr, index)
+	def _shift_down(arr, index, len)
+		_heapify(arr, index, len)
 	end
 
 	# Working
 	# this could be a free function also
-	def _heapify(arr, i)
-		len = arr.length()
+	def _heapify(arr, i, len)
 		left = 2*i+1
 		right = 2*i+2
 		min = i
 
-		if left < len && arr[left] < arr[min]
+		if left < len && arr[left] > arr[min]
 			min = left
 		end
-		if right < len && arr[right] < arr[min]
+		if right < len && arr[right] > arr[min]
 			min = right
 		end
 
@@ -137,12 +179,18 @@ class Heap
 			tmp = arr[i]
 			arr[i] = arr[min]
 			arr[min] = tmp
-			_heapify(arr, min)
+			_heapify(arr, min, len)
 		end
 	end
 end
 
-def heap_sort(heap)
-	# TODO implement
+# @brief sort an array inplace
+# @param arr array to sort
+def heap_sort(arr)
+	# Construct a MAX heap
+	# Heap data structure modifies directly the array
+	heap = Heap.new(arr)
+	# sort the array
+	heap.sort()
 end
 

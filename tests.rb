@@ -12,6 +12,13 @@ def test_eq(a, b)
 	end
 end
 
+def test_less(a, b)
+	if !(a < b)
+		caller_line = caller.first.split(":")[1]
+		puts "ERROR: NOT #{a} < #{b} on line #{caller_line}"
+	end
+end
+
 def test_bool(a)
 	if(!a)
 		caller_line = caller.first.split(":")[1]
@@ -63,7 +70,7 @@ test_set("List") do
 	test_eq(l.size(), s_before + 3)
 	print_list(l)
 
-	# TODO test append in the middle
+	# test append in the middle
 	prev_v = l[6]
 	l.append(125, 6)
 	test_eq(l[6], 125)
@@ -89,7 +96,7 @@ end
 
 # Test binary search tree
 test_set("Heap") do
-	arr = [5, 2, 1, 11, 69, 10, 85, 35, 3, 4]
+	arr = [5, 2, 1, 11, 69, 10, 85, 35, 3, 4, 100]
 	# create an empty heap
 	# Add elements from arr
 	heap1 = Heap.new()
@@ -101,30 +108,60 @@ test_set("Heap") do
 	print("Heap1 = #{heap1._data}")
 	puts ""
 
-	test_eq(heap1.peek(), 1)
+	test_eq(heap1.peek(), 100)
 	test_bool(!heap1.empty())
 	test_eq(heap1.size(), arr.length())
 
 	# create a heap from arr
 	heap2 = Heap.new(arr)
-	# TODO need print heap
 	print("Heap2 = #{heap2._data}")
 	puts ""
-	test_eq(heap2.peek(), 1)
+	print("ARR = #{arr}")
+	puts ""
+
+	test_eq(heap2.peek(), 100)
 	test_eq(heap2.size(), arr.length())
 
-	# TODO test pop
-	test_eq(heap1.pop(), 1)
-	test_eq(heap1.pop(), 2)
-	test_eq(heap1.pop(), 3)
-	test_eq(heap1.peek(), 4)
+	test_eq(heap1.pop(), 100)
+	test_eq(heap1.pop(), 85)
+	test_eq(heap1.pop(), 69)
+	test_eq(heap1.peek(), 35)
 	test_eq(heap1.size(), arr.size()-3)
 	print("Heap1 = #{heap1._data}")
 	puts ""
+	heap1.print_()
 
-	# TODO test heap merge
+	# test heap merge
+	heap3 = Heap.new()
+	heap3.push(55)
+	heap3.push(66)
+	heap3.push(99)
+	heap3.push(-3)
+	heap1.merge(heap3)
+	test_eq(heap1.peek(), 99)
+	heap1.sort()
+	test_eq(heap1._data[0], -3)
 
-	# TODO test heap sort
+	# this modifies the original array too
+	heap2.sort()
+	print "Sorted = #{heap2._data}"
+	puts ""
+	for i in (1...heap2.size())
+		test_less(heap2._data[i-1], heap2._data[i])
+	end
+
+	# testing sorting an array directly
+	# Also testing adding multiples of same values and sorting them
+	a2 = [56, 43, 20, 10, 2, 7, 100, 110, 0, 5, 1, 5, 1]
+	print "A2 = #{a2}"
+	puts ""
+	heap_sort(a2)
+	print "Sorted = #{a2}"
+	puts ""
+	for i in (1...heap2.size())
+		test_less(heap2._data[i-1], heap2._data[i])
+	end
+
 
 	# TODO test large heaps (64+, 1k, 5k, 10k)
 end
