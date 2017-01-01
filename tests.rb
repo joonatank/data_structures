@@ -3,6 +3,7 @@
 
 require_relative 'list'
 require_relative 'heap'
+require_relative 'sort'
 
 # Only uses operator==
 def test_eq(a, b)
@@ -14,6 +15,13 @@ end
 
 def test_less(a, b)
 	if !(a < b)
+		caller_line = caller.first.split(":")[1]
+		puts "ERROR: NOT #{a} < #{b} on line #{caller_line}"
+	end
+end
+
+def test_less_or_eq(a, b)
+	if !(a < b) && !(a == b)
 		caller_line = caller.first.split(":")[1]
 		puts "ERROR: NOT #{a} < #{b} on line #{caller_line}"
 	end
@@ -150,19 +158,49 @@ test_set("Heap") do
 		test_less(heap2._data[i-1], heap2._data[i])
 	end
 
-	# testing sorting an array directly
-	# Also testing adding multiples of same values and sorting them
-	a2 = [56, 43, 20, 10, 2, 7, 100, 110, 0, 5, 1, 5, 1]
-	print "A2 = #{a2}"
-	puts ""
-	heap_sort(a2)
-	print "Sorted = #{a2}"
-	puts ""
-	for i in (1...heap2.size())
-		test_less(heap2._data[i-1], heap2._data[i])
-	end
-
 
 	# TODO test large heaps (64+, 1k, 5k, 10k)
+end
+
+def test_sort (a_proc)
+	a = [56, 43, 20, 10, 2, 7, 100, 110, 0, 5, 1, 5, 1]
+	print "A = #{a}"
+	puts ""
+	a_proc.call(a)
+	print "Sorted = #{a}"
+	puts ""
+	for i in (1...a.length())
+		test_less_or_eq(a[i-1], a[i])
+	end
+end
+
+test_set("sort") do
+	# testing sorting an array directly
+	# Also testing adding multiples of same values and sorting them
+	puts "Heap sort test"
+	a_proc =  Proc.new {|a| heap_sort(a)}
+	test_sort(a_proc)
+
+	puts "Selection sort test"
+	a_proc =  Proc.new {|a| selection_sort(a)}
+	test_sort(a_proc)
+
+	# TODO add
+	puts "Bubble sort test"
+	a_proc = Proc.new {|a| bubble_sort(a)}
+	test_sort(a_proc)
+
+	puts "Merge sort test"
+	# not in place sort
+	# -> we need to do assigment
+	# -> the test_sort procedure with proc doesn't work here
+	a = [56, 43, 20, 10, 2, 7, 100, 110, 0, 5, 1, 5, 1]
+	print "A = #{a}"
+	puts ""
+	a = merge_sort(a)
+	print "Sorted = #{a}"
+	puts ""
+
+	# TODO add quick sort
 end
 
