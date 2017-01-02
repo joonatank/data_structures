@@ -7,8 +7,9 @@
 # Implemented
 # 	selection sort
 # 	merge sort
-# TODO add
 # 	bubble sort
+# 	insertion sort
+# TODO add
 # 	quicksort
 
 
@@ -33,8 +34,36 @@ def selection_sort(arr)
 	end
 end
 
+# @brief bubble sort, inplace
+# @param arr array to sort
 def bubble_sort(arr)
+	n = arr.length()
+	begin
+		swapped = false
+		for i in (1...n) do
+			if arr[i] < arr[i-1]
+				tmp = arr[i]
+				arr[i] = arr[i-1]
+				arr[i-1] = tmp
+				swapped = true
+			end
+		end
+	end until !swapped
+end
 
+# @brief insertion sort, inplace
+# @param arr array to sort
+def insertion_sort(arr)
+	n = arr.length()
+	for i in (1...n) do
+		j = i
+		while j > 0 && arr[j] < arr[j-1]
+			tmp = arr[j]
+			arr[j] = arr[j-1]
+			arr[j-1] = tmp
+			j -= 1
+		end
+	end
 end
 
 # @brief merge sort, not inplace

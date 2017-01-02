@@ -185,9 +185,12 @@ test_set("sort") do
 	a_proc =  Proc.new {|a| selection_sort(a)}
 	test_sort(a_proc)
 
-	# TODO add
 	puts "Bubble sort test"
 	a_proc = Proc.new {|a| bubble_sort(a)}
+	test_sort(a_proc)
+
+	puts "Insertion sort test"
+	a_proc = Proc.new {|a| insertion_sort(a)}
 	test_sort(a_proc)
 
 	puts "Merge sort test"
