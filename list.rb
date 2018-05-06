@@ -90,7 +90,7 @@ class List
 			return nil
 		else
 			val = @_root.value
-			@_root = @_root.next 
+			@_root = @_root.next
 			return val
 		end
 	end
@@ -127,6 +127,14 @@ class List
 		end
 	end
 
+	# @brief is container empty
+	# return size() == 0
+	def empty()
+		return @_root.nil?
+	end
+
+	# @brief array accessor
+	# O(n) complexity
 	def get(index)
 		elem = @_root
 		until index == 0 || elem.nil? do
@@ -141,12 +149,6 @@ class List
 	def [](index)
 		elem = get(index)
 		return elem.nil? ? nil : elem.value
-	end
-
-	# @brief is container empty
-	# return size() == 0
-	def empty()
-		return @_root.nil?
 	end
 
 	# @brief return the number of elements in the container

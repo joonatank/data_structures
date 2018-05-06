@@ -14,22 +14,20 @@
 # 	- merge
 # 	- sort
 
-# Binary heap
-# MAX heap
+# Binary MAX heap
 class Heap
 	# implementation as an array
 	attr :_data
-	
+
 	# @brief constructor
 	# @param arr array to heapify
 	def initialize(arr = nil)
-		if arr.nil? 
+		if arr.nil?
 			@_data = Array.new(0)
 		else
 			# This isn't copy constructor it's a copy of the reference
 			@_data = arr
 
-			# FIXME make heap
 			i = (@_data.length()-1)/2
 			while i >= 0
 				_heapify(@_data, i, @_data.length())
@@ -38,8 +36,8 @@ class Heap
 		end
 	end
 
-	# @brief peek the min value
-	# @return min value in the heap
+	# @brief peek the max value
+	# @return max value in the heap
 	def peek()
 		return @_data[0]
 	end
@@ -65,7 +63,7 @@ class Heap
 		@_data.pop()
 		# fix the heap order
 		_shift_down(@_data, 0, @_data.length())
-		
+
 		return v
 	end
 
@@ -77,16 +75,20 @@ class Heap
 	# using a max heap it's actually easier to sort
 	# since we can do arr[len-i] = pop
 	#
-	# mhhh
 	# if we pass array here we need to
 	# contruct heap
 	# keep the heap at [0, i], keep sorted data at ]i, len]
 	def sort()
 		# We need to modify the array here
-			
+
 		len = @_data.length()-1
 		for i in (0..len)
-			# custom pop since we don't actually want to remove data from the array
+			# [0..i] is unsorted part of the array [i..len] is already sorted
+			# Unsorted part contains the heap, first element the largest.
+			# The sorted part has the largest element as last.
+			#
+			# We swap elements from the heap to the sorted part
+			# Then redo the heap for one element less.
 			tmp = @_data[len-i]
 			@_data[len-i] = peek()
 			@_data[0] = tmp
@@ -95,7 +97,7 @@ class Heap
 	end
 
 	# @brief how many elements in the heap
-	# return size of the heap
+	# @return size of the heap
 	def size()
 		return @_data.length()
 	end
@@ -107,7 +109,7 @@ class Heap
 	end
 
 	# More complex operations
-	
+
 	# @brief Merge another heap into this one
 	# @param other heap to add to this one
 	# TODO should this be a free function (so it doesn't modify this)
@@ -123,6 +125,11 @@ class Heap
 		end
 	end
 
+        # @brief print to standard out
+        # Formats it like a tree
+        # X
+        # X X
+        # X X X X
 	def print_()
 		len = @_data.length()
 		i = 1
@@ -141,6 +148,7 @@ class Heap
 	end
 
 	# Internal
+        # Move an object up in the heap, till parent is larger
 	def _shift_up(arr, index, len)
 		parent = (index-1)/2
 
@@ -160,7 +168,10 @@ class Heap
 		_heapify(arr, index, len)
 	end
 
-	# Working
+        # Make an array into a heap
+        # Moves an array element at position i down the heap if it's smaller than it's children
+        # Continue till all children are smaller than the parent
+        #
 	# this could be a free function also
 	def _heapify(arr, i, len)
 		left = 2*i+1
@@ -179,6 +190,7 @@ class Heap
 			tmp = arr[i]
 			arr[i] = arr[min]
 			arr[min] = tmp
+
 			_heapify(arr, min, len)
 		end
 	end
